@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -45,7 +45,7 @@ function App() {
   const doneTask = (id : string) => {
     const updatedTasks = tasks.map((task) => {
       if (task.id === id){
-        return {...task, status:"done" as TaskStatus, completedAt:new Date();}
+        return {...task, status:"done" as TaskStatus, completedAt:new Date()}
       }else{
         return task;
       }
@@ -61,9 +61,11 @@ function App() {
         {tasks.map((task) =>( 
           <li key={task.id}>
             {statusEmoji(task.status)}{task.content}
+            <br />
             <span className ="date">
               Initiée le {task.createAt.toLocaleDateString("fr-FR")}
             </span>
+            <br />
             {task.completedAt && (
               <span className ="date">
                 Terminée le {task.completedAt.toLocaleDateString("fr-FR")}
