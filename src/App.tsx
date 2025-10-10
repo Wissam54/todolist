@@ -3,25 +3,30 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { tasksCollection } from './data'
-import { v4 as uuidv4 } from "uuid";
-import type { Task, TaskStatus } from "./Task"
+import type { Task, TaskStatus } from './Task'
+import { v4 as uuidv4 } from 'uuid';
+import TaskForm from './composants/TaskForm';
+import TasksMaster from './composants/TasksMaster';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TaskDetails from './composants/TaskDetails.tsx';
 
 function App() {
-  // const tasks = tasksCollection ;
+  //const tasks = tasksCollection;
   const [tasks, setTasks] = useState<Task[]>(tasksCollection);
 
   const addNewTask = (content: string) => {
     const newTask: Task = {
       id: uuidv4(),
       content: content,
-      status: "todo",
-      createAt: new Date()
+      status: 'todo',
+      createdAt: new Date()
     };
     setTasks([newTask, ...tasks]);
   }
 
   const handleClick = () => {
     const content = prompt("Veuillez saisir le contenu...");
+
     if (!content || content.trim() === "") {
       alert("Veuillez saisir un contenu");
       return;
@@ -29,58 +34,56 @@ function App() {
     addNewTask(content!);
   }
 
-  const statusEmoji = (status: TaskStatus): JSX.Element => {
+  const getStatusEmoji = (status: TaskStatus): JSX.Element => {
     switch (status) {
       case "todo":
-        return <span>⌛</span>;
+        return <span>â³</span>;
       case "doing":
-        return <span>🕰️</span>;
+        return <span>âŒšï¸</span>;
       case "done":
-        return <span>✅</span>;
+        return <span>âœ…</span>;
       default:
         return <span></span>;
     }
   };
 
-  const doneTask = (id : string) => {
+  const doneTask = (id: string) => {
     const updatedTasks = tasks.map((task) => {
-      if (task.id === id){
-        return {...task, status:"done" as TaskStatus, completedAt:new Date()}
-      }else{
+      if (task.id === id) {
+        return { ...task, status: 'done' as TaskStatus, completedAt: new Date() };
+      } else {
         return task;
       }
     })
     setTasks(updatedTasks);
-  }
+  };
+  const deleteTask = (id: string) => {
+  // On filtre toutes les tÃ¢ches sauf celle avec l'id correspondant
+  const updatedTasks = tasks.filter(task => task.id !== id);
+  setTasks(updatedTasks);
+};
   return (
-    <>
-      <h1>Todo List</h1>
-      <p>Nombre de tâches : {tasks.length}</p>
-      <button onClick={handleClick}>Nouvelle tâche</button>
-      <ul>
-        {tasks.map((task) =>( 
-          <li key={task.id}>
-            {statusEmoji(task.status)}{task.content}
-            <br />
-            <span className ="date">
-              Initiée le {task.createAt.toLocaleDateString("fr-FR")}
-            </span>
-            <br />
-            {task.completedAt && (
-              <span className ="date">
-                Terminée le {task.completedAt.toLocaleDateString("fr-FR")}
-              </span>
-            )}
-            <p>
-              {task.status !== "done" && (
-                <button onClick={() => doneTask(task.id)}>Valider</button>
-              )}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </>
-  )
-}
+    <Router>
 
+    
+   <Routes>
+      {/* Route principale : liste de toutes les tÃ¢ches */}
+      <Route 
+        path="/" 
+        element={
+          <>
+            <h1>Todo List</h1>
+            <p>Nombre de taches : {tasks.length}</p>
+            <TaskForm onadd={addNewTask} />
+            <TasksMaster tasks={tasks} onDone={doneTask} onDelete={deleteTask} />
+          </>
+        }
+      />
+
+      {/* Route détails d'une tÃ¢che */}
+      <Route path="/tasks/:taskId" element={<TaskDetails tasks={tasks} />} />
+    </Routes>
+    </Router>
+  );
+}
 export default App

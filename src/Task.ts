@@ -1,9 +1,9 @@
 export type Task={
    id:string;
    content: string;
-   createAt:Date;
+   createdAt:Date;
    completedAt?: Date;
    status: TaskStatus
 }
 
-export type TaskStatus = 'todo'| 'doing'|'done';
+export type TaskStatus = 'todo'| 'doing'|'done';        
